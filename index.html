@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+</html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        
+        <title>Agenda</title>
+    </head>
+    <body style="margin: 20px">         
+        <div id="app">
+            
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.12/jquery.mask.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.12/jquery.mask.min.js"></script>
+
+        <script>
+            function formatDate(date) {
+                formated = date.split("-");
+                formated = formated[2] + "/" + formated[1] + "/" + formated[0];
+                return formated;
+            }
+
+            function formatTime(time) {
+                formated = time.split(":");
+                formated = formated[0] + "h" + formated[1] + "min";
+                return formated;
+            }
+
+            new Vue({
+                el: '#app',
+                template: `
+                <div class="container">
+                    <div class="jumbotron">
+                        <h1 class="display-6">Super Agenda</h1>
+                       <p class="lead">Esta é uma super agenda onde você pode agendar agendamentos que precisam ser agendados.</p>
+                    </div>
+
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Nome do evento</label>
+                            <input style="max-width: 400px" v-model="event_name" type="email" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Nome do evento">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descrição do evento</label>
+                            <textarea style="max-width: 400px" v-model="description" type="email" class="form-control" id="description" aria-describedby="emailHelp" placeholder="Descrição do evento"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefone</label>
+                            <input style="max-width: 300px" v-model="phone" type="tex" class="form-control" id="phone" aria-describedby="emailHelp" v-bind:placeholder="phone_temp">
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col">
+                                <label for="start-date">Data de início</label>
+                                <input style="max-width: 180px" v-model="start_date" type="date" class="form-control" id="start-date" aria-describedby="emailHelp">
+                            </div>
+                            <div class="form-group col">
+                                <label for="start-time">Hora de início</label>
+                                <input style="max-width: 150px" v-model="start_time" type="time" class="form-control" id="start-time" aria-describedby="emailHelp" placeholder="hh:mm">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col">
+                                <label for="end-date">Data final</label>
+                                <input style="max-width: 180px" v-model="end_date" type="date" class="form-control" id="end-date" aria-describedby="emailHelp">
+                            </div>
+                            <div class="form-group col">
+                                <label for="end-time">Hora de término</label>
+                                <input style="max-width: 150px" v-model="end_time" type="time" class="form-control" id="end-time" aria-describedby="emailHelp" placeholder="hh:mm">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-info" v-on:click="addEvent()">Adiconar evento</button>
+                    </form>
+
+                    <br>
+                    <br>
+
+                    <div v-for="(e, i) in events">
+                        <p>
+                            <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                {{ e.event_name }}
+                                <span class="badge badge-light">{{ e.start_date }} - {{ e.end_date }}</span>
+                            </button>
+                        </p>
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <h5> {{ e.description }} </h5>
+                                <span style="width: 20%; min-width: 150px" class="badge badge-light">Telefone: {{ e.phone }}</span>
+                                <span style="width: 20%; min-width: 150px" class="badge badge-light">{{ e.start_time }} - {{ e.end_time }}</span>
+                                <span style="width: 20%; min-width: 150px" class="badge badge-light">{{ e.start_date }} - {{ e.end_date }}</span>
+                                
+                                <br>
+
+                                <button style="width: 20%; min-width: 150px" type="button" class="btn btn-outline-success" v-on:click="updateEvent(i)">Atualizar evento</button>
+                                <br>
+                                <button style="width: 20%; min-width: 150px" type="button" class="btn btn-outline-danger" v-on:click="excludeEvent(i)">Excluir evento</button>
+                            </div>
+                        </div>
+
+                        <br>
+                    </div>
+
+
+                </div>
+                `,
+                data() {
+                    return {
+                        events: [],
+                        event_name: '',
+                        description: '',
+                        start_date: '',
+                        end_date: '',
+                        start_time: '',
+                        end_time: '',
+                        phone: '',
+                        phone_temp: '(00) 0 0000-0000'
+                    }
+                },
+                methods: {
+                    addEvent() {
+                        if (this.phone.length != 16) {
+                            this.phone = '';
+                            this.phone_temp = 'O padrão é (00) 0 0000-0000';
+                        }
+                        else {
+                            this.phone_temp = '(00) 0 0000-0000';
+                            
+                            this.events.push({
+                                event_name: this.event_name,
+                                description: this.description,
+                                start_date: formatDate(this.start_date),
+                                end_date: formatDate(this.end_date),
+                                end_time: formatTime(this.end_time),
+                                start_time: formatTime(this.start_time),
+                                phone: this.phone
+                            });
+
+                            formatDate(this.start_date);
+
+                            this.event_name = '';
+                            this.description = '';
+                            this.start_date = '';
+                            this.end_date = '';
+                            this.start_time = '';
+                            this.end_time = '';
+                            this.phone = '';                          
+                        }
+                    },
+
+                    excludeEvent(i) {
+                        this.events.splice(i, 1);
+                    },
+
+                    updateEvent(i) {
+                        this.events[i].event_name = this.event_name != '' ? this.event_name : this.events[i].event_name;
+                        this.events[i].description = this.description != '' ? this.description : this.events[i].description;
+                        this.events[i].start_date = this.start_date != '' ? formatDate(this.start_date) : this.events[i].start_date;
+                        this.events[i].end_date = this.end_date != '' ? formatDate(this.end_date) : this.events[i].end_date;
+                        this.events[i].end_time = this.end_time != '' ? formatTime(this.end_time) : this.events[i].end_time;
+                        this.events[i].start_time = this.start_time != '' ? formatTime(this.start_time) : this.events[i].start_time;
+                        this.events[i].phone = this.phone != '' ? this.phone : this.events[i].phone;
+
+                        this.event_name = '';
+                        this.description = '';
+                        this.start_date = '';
+                        this.end_date = '';
+                        this.start_time = '';
+                        this.end_time = '';
+                        this.phone = '';
+                    }
+                }
+            })
+
+            $(document).ready(function() {
+                $('#phone').mask('(00) 0 0000-0000');
+            });
+        </script>
+    </body>
+</html>
